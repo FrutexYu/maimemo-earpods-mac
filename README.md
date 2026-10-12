@@ -23,7 +23,7 @@
 |---|---|
 | 系统 | macOS |
 | 耳机 | **USB-C 版 EarPods**（3.5mm 版走耳机口的内部通道，本规则未验证） |
-| 软件 | [Karabiner-Elements](https://karabiner-elements.pqrs.org/) **15.3.18 或更新**（`is_consumer` 设备匹配从这版开始支持） |
+| 软件 | [Karabiner-Elements](https://karabiner-elements.pqrs.org/) 最新版（本规则在 **16.3.0** 上实测通过） |
 | App | 墨墨背单词 Mac 版（App Store 搜「墨墨背单词」，开发者「成都墨墨科技有限公司」） |
 
 ## 安装
@@ -42,21 +42,34 @@
 
 ### 2. 导入规则
 
-**方式 A：一键导入**（需要规则文件有一个 HTTPS 地址）
+**方式 A：一键导入**（推荐）
 
-在浏览器里打开：
+把下面这行原样粘进浏览器地址栏，回车。Karabiner 会自动下载规则并弹出导入界面：
 
 ```
-karabiner://karabiner/assets/complex_modifications/import?url=<规则文件的 HTTPS 地址>
+karabiner://karabiner/assets/complex_modifications/import?url=https%3A%2F%2Ffastly.jsdelivr.net%2Fgh%2FFrutexYu%2Fmaimemo-earpods-mac%40main%2Fmaimemo-earpods-mac.json
 ```
+
+它背后的规则文件地址是：
+
+```
+https://fastly.jsdelivr.net/gh/FrutexYu/maimemo-earpods-mac@main/maimemo-earpods-mac.json
+```
+
+> 用 jsDelivr 而不是 `raw.githubusercontent.com`，是因为后者在国内访问不通。
+> 如果 `fastly.jsdelivr.net` 取不到，把域名换成 `gcore.jsdelivr.net` 或 `testingcf.jsdelivr.net` 即可，路径完全一样。
 
 **方式 B：手动放置**
 
-把 `maimemo-earpods-mac.json` 拷到：
+一条命令下载到位：
 
+```bash
+mkdir -p ~/.config/karabiner/assets/complex_modifications
+curl -L -o ~/.config/karabiner/assets/complex_modifications/maimemo-earpods-mac.json \
+  https://fastly.jsdelivr.net/gh/FrutexYu/maimemo-earpods-mac@main/maimemo-earpods-mac.json
 ```
-~/.config/karabiner/assets/complex_modifications/
-```
+
+或者浏览器打开那个地址、另存为到 `~/.config/karabiner/assets/complex_modifications/`。
 
 ### 3. 启用规则
 
@@ -81,13 +94,18 @@ Karabiner-Elements → **Complex Modifications** → **Add rule** → 找到「E
 { "vendor_id": 1452, "product_id": 4363 }
 ```
 
-> 耳机的按键在系统里属于 **Consumer Control** 设备（`is_consumer`）。`is_consumer` 是 Karabiner 15.3.18 才支持的类型，这也是上面要求版本的原因。
+`vendor_id` 1452 是苹果，`product_id` 4363 对应 USB-C 版 EarPods。
 
-**你的耳机 ID 如果不是这一组，规则一次都不会触发。**
+**你的耳机 ID 如果不是这一组，规则一次都不会触发。** 查自己的：
 
-查自己的 ID：打开 **Karabiner-EventViewer** → **Devices** 标签 → 找到你的耳机，看 `vendor_id` 和 `product_id`，把规则里所有 `device_if` 的两行数字改掉即可。
+```bash
+"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli" \
+  --list-connected-devices
+```
 
-> `vendor_id` 是厂商 ID，1452 对应苹果。`product_id` 才是具体型号。
+在输出里找到你的耳机，看它那一组 `vendor_id` / `product_id`，把规则里所有 `device_if` 的两行数字改掉即可。
+
+> Karabiner 设置里的 **Devices** 页也能看到设备列表，但要看 ID 用上面这条命令更直接。
 
 ## 改成别的 App
 
@@ -136,4 +154,4 @@ mdls -name kMDItemCFBundleIdentifier /Applications/你的App.app
 
 ## 许可
 
-MIT。随意取用和修改。
+随意取用、修改、再分发，不用署名。
